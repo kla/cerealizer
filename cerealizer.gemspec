@@ -15,7 +15,11 @@ Gem::Specification.new do |spec|
   spec.require_paths  = ["lib"]
 
   spec.add_dependency("multi_json")
+  spec.add_dependency("activesupport", ">= 5.0.0")
 
   spec.add_development_dependency("rake")
   spec.add_development_dependency("minitest")
+  spec.add_development_dependency("activerecord", ">= 5.0.0")
+  spec.add_development_dependency("sqlite3")
+  spec.add_development_dependency("oj")
 end
