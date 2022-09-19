@@ -24,4 +24,18 @@ class AttributesTest < TestCase
   it "returns nil for a nil object" do
     assert_nil Serializers::UserSerializer.new(nil).as_json
   end
+
+  describe "with an :if condition" do
+    it "accepts a symbol" do
+      refute serializer.as_json.has_key?("admin")
+      user.update!(permissions: "admin")
+      assert Serializers::UserSerializer.new(user).as_json["admin"]
+    end
+
+    it "accepts a proc" do
+      refute serializer.as_json.has_key?("super_admin")
+      user.update!(permissions: "super_admin")
+      assert Serializers::UserSerializer.new(user).as_json["super_admin"]
+    end
+  end
 end

@@ -18,6 +18,7 @@ module Database
         t.timestamps
         t.string :first_name
         t.string :last_name
+        t.string :permissions, default: ""
       end
 
       ActiveRecord::Migration.create_table(:items) do |t|

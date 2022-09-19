@@ -17,14 +17,20 @@ module Cerealizer
       options_array.detect do |options|
         if field_options[:tags].present?
           options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).present? : false
-        elsif field_options[:if] && !serializer.instance_exec(options[:locals] || { }, &field_options[:if])
-          false
+        elsif field_options[:if]
+          run_proc(field_options[:if], serializer)
         elsif options[:exclude_associations] && association?
           false
         else
           true
         end
       end
+    end
+
+    def run_proc(callable, serializer)
+      return serializer.instance_exec(&callable) if callable.is_a?(Proc)
+      return serializer.send(callable) if serializer.respond_to?(callable)
+      raise ArgumentError, "The :if option must be proc or method name"
     end
 
     def fetch_value(serializer, options_array)
