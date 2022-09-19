@@ -27,4 +27,16 @@ class AssociationsTest < TestCase
     assert_equal false, json.has_key?("items")
     assert_equal false, json["user"].has_key?("full_name")
   end
+
+  it "returns nil for a nil has_one object" do
+    order.user = nil
+    order.save!
+    assert_nil serialized_order["user"]
+  end
+
+  it "returns an empty array for an empty has_many association" do
+    order.items = []
+    order.save!
+    assert_equal [], serialized_order["items"]
+  end
 end

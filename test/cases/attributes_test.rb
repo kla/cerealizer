@@ -20,4 +20,8 @@ class AttributesTest < TestCase
   it "does not include untagged attributes" do
     assert_equal false, serializer.as_json.has_key?("full_name")
   end
+
+  it "returns nil for a nil object" do
+    assert_nil Serializers::UserSerializer.new(nil).as_json
+  end
 end
