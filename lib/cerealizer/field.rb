@@ -6,7 +6,7 @@ module Cerealizer
       @name = name.to_sym
       @type = type.to_sym
       @field_options = options.slice(:method, :if)
-      @field_options[:views] = options[:views] ? Array(options[:views]).map(&:to_sym) : [ ]
+      @field_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
       @field_options.merge!(options.slice(:serializer)) if association?
     end
 
@@ -15,8 +15,8 @@ module Cerealizer
       return true if simple? && field_options.blank?
 
       options_array.detect do |options|
-        if field_options[:views].present?
-          options[:views].present? ? (field_options[:views] & Array(options[:views])).present? : false
+        if field_options[:tags].present?
+          options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).present? : false
         elsif field_options[:if] && !serializer.instance_exec(options[:locals] || { }, &field_options[:if])
           false
         elsif options[:exclude_associations] && association?

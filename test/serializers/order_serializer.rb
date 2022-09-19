@@ -5,6 +5,6 @@ module Serializers
   class OrderSerializer < Cerealizer::Base
     attributes :id, :created_at, :updated_at, :paid
     has_one :user, serializer: UserSerializer
-    has_many :items, serializer: ItemSerializer
+    has_many :items, serializer: ItemSerializer, tags: [ :full ]
   end
 end

@@ -1,7 +1,7 @@
 require_relative "../test_helper"
 
 class AssociationsTest < TestCase
-  let(:serialized_order) { Serializers::OrderSerializer.new(order).as_json }
+  let(:serialized_order) { Serializers::OrderSerializer.new(order).as_json(tags: [ :full ]) }
 
   it "includes has_many associations" do
     items = serialized_order["items"]
@@ -20,5 +20,11 @@ class AssociationsTest < TestCase
 
   it "includes has_one associations" do
     assert_user user, serialized_order["user"]
+  end
+
+  it "does not include untagged associations" do
+    json = Serializers::OrderSerializer.new(order).as_json
+    assert_equal false, json.has_key?("items")
+    assert_equal false, json["user"].has_key?("full_name")
   end
 end
