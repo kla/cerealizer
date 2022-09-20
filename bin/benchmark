@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require "benchmark"
+
+Dir.chdir("benchmarks")
+system("ruby #{ARGV[0]}.rb #{ARGV[1]}")
