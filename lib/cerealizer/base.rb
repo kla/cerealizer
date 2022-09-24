@@ -30,17 +30,12 @@ module Cerealizer
       @object = object
     end
 
-    def serialization_options
-      nil
-    end
-
     def serializable_hash(options={})
       return nil unless object
-      options_array = build_options_array(serialization_options, options)
 
       self.class.fields.each_with_object({}) do |field, hash|
-        next unless field.include?(self, options_array)
-        hash[field.name] = field.fetch_value(self, options_array)
+        next unless field.include?(self, options)
+        hash[field.name] = field.fetch_value(self, options)
       end
     end
 
@@ -50,13 +45,6 @@ module Cerealizer
 
     def to_json(options={})
       MultiJson.dump(serializable_hash(options))
-    end
-
-    private
-
-    def build_options_array(*options)
-      array = Array(options).flatten.compact.reject(&:blank?)
-      array.blank? ? [{}] : array
     end
   end
 end

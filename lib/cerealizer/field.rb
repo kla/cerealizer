@@ -13,21 +13,18 @@ module Cerealizer
       @field_options.merge!(options.slice(:serializer)) if association?
     end
 
-    def include?(serializer, options_array)
+    def include?(serializer, options={})
       # no need to do all the checks for this common case
-      # return true if simple? && !field_options
       return true if field_options.blank?
 
-      options_array.detect do |options|
-        if field_options[:tags].present?
-          options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).length > 0 : false
-        elsif field_options[:if]
-          run_proc(field_options[:if], serializer)
-        elsif options[:exclude_associations] && association?
-          false
-        else
-          true
-        end
+      if field_options[:tags].present?
+        options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).length > 0 : false
+      elsif field_options[:if]
+        run_proc(field_options[:if], serializer)
+      elsif options[:exclude_associations] && association?
+        false
+      else
+        true
       end
     end
 
@@ -37,8 +34,8 @@ module Cerealizer
       raise ArgumentError, "The :if option must be proc or method name"
     end
 
-    def fetch_value(serializer, options_array)
-      send("fetch_#{type}", serializer, options_array)
+    def fetch_value(serializer, options={})
+      send("fetch_#{type}", serializer, options)
     end
 
     def simple?
@@ -51,7 +48,7 @@ module Cerealizer
 
     private
 
-    def fetch_simple(serializer, options_array=[])
+    def fetch_simple(serializer, _options={})
       object = serializer.object
 
       if method = field_options[:method]
@@ -61,16 +58,16 @@ module Cerealizer
       end
     end
 
-    def fetch_has_one(serializer, options_array)
+    def fetch_has_one(serializer, options)
       assoc_object = fetch_simple(serializer)
-      field_options[:serializer].new(assoc_object).serializable_hash(options_array)
+      field_options[:serializer].new(assoc_object).serializable_hash(options)
     end
 
-    def fetch_has_many(serializer, options_array)
+    def fetch_has_many(serializer, options)
       ser = field_options[:serializer].new(nil)
-      fetch_simple(serializer).map do |assoc_object|
+      fetch_simple(serializer, options).map do |assoc_object|
         ser.instance_variable_set(:@object, assoc_object)
-        ser.serializable_hash(options_array)
+        ser.serializable_hash(options)
       end
     end
   end
