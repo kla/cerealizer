@@ -100,6 +100,46 @@ module Serializers
       end
     end
   end
+
+  module Hash
+    class ItemSerializer
+      attr_accessor :item
+
+      def initialize(item)
+        @item = item
+      end
+
+      def serializable_hash
+        { id: @item.id, order_id: @item.order_id, created_at: @item.updated_at, name: @item.name, price: @item.quantity }
+      end
+    end
+
+    class OrderSerializer
+      include ::StandardSerializer
+
+      def initialize(order)
+        @order = order
+      end
+
+      def serializable_hash
+        item_serializer = ItemSerializer.new(nil)
+        {
+          id: @order.id,
+          created_at: @order.created_at,
+          updated_at: @order.updated_at,
+          paid: @order.paid,
+          items: @order.items.map do |item|
+            item_serializer.item = item
+            item_serializer.serializable_hash
+          end
+        }
+      end
+
+      def to_json
+        MultiJson.dump(serializable_hash)
+      end
+    end
+  end
 end
 
 Setup.benchmark("Serializers::#{ARGV[0]}".constantize, ARGV[1].to_i)

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require "json"
 
-SERIALIZERS = %w( Cerealizer Ams JsonApi JbuilderEncode Alba Panko ).shuffle
+SERIALIZERS = %w( Cerealizer Ams JsonApi JbuilderEncode Alba Panko Hash ).shuffle
 
 args = ARGV.dup
 type = "#{args.shift}.rb"

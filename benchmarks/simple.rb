@@ -64,6 +64,20 @@ module Serializers
       end
     end
   end
+
+  module Hash
+    class OrderSerializer
+      include ::StandardSerializer
+
+      def initialize(order)
+        @order = order
+      end
+
+      def to_json
+        MultiJson.dump(id: @order.id, created_at: @order.created_at, updated_at: @order.updated_at, paid: @order.paid)
+      end
+    end
+  end
 end
 
 Setup.benchmark("Serializers::#{ARGV[0]}".constantize, ARGV[1].to_i)

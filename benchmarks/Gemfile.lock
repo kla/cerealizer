@@ -86,6 +86,8 @@ DEPENDENCIES
   cerealizer!
   jbuilder
   jsonapi-serializer
+  multi_json
+  oj
   panko_serializer
   sqlite3
 
