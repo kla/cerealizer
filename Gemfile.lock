@@ -25,11 +25,13 @@ GEM
     multi_json (1.15.0)
     oj (3.13.21)
     rake (13.0.6)
+    sqlite3 (1.5.0-arm64-darwin)
     sqlite3 (1.5.0-x86_64-linux)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
 
 PLATFORMS
+  arm64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
