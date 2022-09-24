@@ -6,7 +6,7 @@ SERIALIZERS = %w( Cerealizer Ams JsonApi JbuilderEncode Alba Panko ).shuffle
 args = ARGV.dup
 type = "#{args.shift}.rb"
 serializers = [ ]
-iterations = 10000
+iterations = 50000
 
 args.each do |arg|
   if arg =~ /[0-9]+/
