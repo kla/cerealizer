@@ -5,18 +5,22 @@ module Cerealizer
     def initialize(name, type, options={})
       @name = name.to_sym
       @type = type.to_sym
-      @field_options = options.slice(:method, :if)
-      @field_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
+      @field_options = { }
+      @field_options[:method] = options[:method] if options[:method]
+      @field_options[:if] = options[:if] if options[:if]
+      @field_options[:tags] = Array(options[:tags]).map(&:to_sym) if options[:tags]
+      # @field_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
       @field_options.merge!(options.slice(:serializer)) if association?
     end
 
     def include?(serializer, options_array)
       # no need to do all the checks for this common case
-      return true if simple? && field_options.blank?
+      # return true if simple? && !field_options
+      return true if field_options.blank?
 
       options_array.detect do |options|
         if field_options[:tags].present?
-          options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).present? : false
+          options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).length > 0 : false
         elsif field_options[:if]
           run_proc(field_options[:if], serializer)
         elsif options[:exclude_associations] && association?

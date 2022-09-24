@@ -1,5 +1,40 @@
 #!/usr/bin/env ruby
-require "benchmark"
+require "json"
+
+SERIALIZERS = %w( Cerealizer Ams JsonApi JbuilderEncode Alba Panko ).shuffle
+
+args = ARGV.dup
+type = "#{args.shift}.rb"
+serializers = [ ]
+iterations = 10000
+
+args.each do |arg|
+  if arg =~ /[0-9]+/
+    iterations = arg.to_i
+  elsif SERIALIZERS.include?(arg)
+    serializers << arg
+  end
+end
 
 Dir.chdir("benchmarks")
-system("ruby #{ARGV[0]}.rb #{ARGV[1]}")
+serializers = SERIALIZERS if serializers.length == 0
+times = [ ]
+puts "Running #{iterations} iterations..." if iterations > 1
+
+serializers.each do |serializer|
+  command = "ruby #{type} #{serializer} #{iterations}"
+
+  if iterations == 1
+    puts `#{command}`
+  else
+    times << (time = JSON.parse(`#{command}`))
+    puts time
+  end
+end
+
+if iterations > 1
+  puts "\nSerializer, Seconds"
+  times.sort_by { |item| item["total"] }.each do |item|
+    puts item.values.join(", ")
+  end
+end

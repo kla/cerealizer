@@ -8,30 +8,39 @@ require "active_model_serializers"
 require "jsonapi/serializer"
 require "jbuilder"
 require "alba"
+require "panko_serializer"
 require_relative "../test/models/order"
 require_relative "../test/models/item"
 require_relative "../test/models/user"
 require_relative "../test/factories"
 require_relative "../test/database"
 
+module StandardSerializer
+  extend ActiveSupport::Concern
+
+  class_methods do
+    def to_json(object)
+      new(object).to_json
+    end
+  end
+end
+
 class Setup
   include Database
   include Factories
 
-  def self.benchmark(classes, iterations)
-    iterations = (iterations.presence || 10000).to_i
-    puts "Running #{iterations} iterations"
-
-    Benchmark.bm do |x|
-      classes.shuffle.each do |klass|
-        x.report(klass) do
-          iterations.times do
-            json = klass.const_get("OrderSerializer").new(Order.last).to_json
-            puts " - #{json.class}: #{json}" if iterations == 1
-          end
-        end
-      end
+  def self.benchmark(klass, iterations)
+    begin_at = Time.now
+    order = Order.first
+    name = klass.to_s.gsub("Serializers::", "")
+    iterations.times do
+      json = klass.const_get("OrderSerializer").to_json(order.reload)
+      raise "Expected JSON to be a String" unless json.is_a?(String)
+      puts "#{name}, #{json}" if iterations == 1
     end
+
+    time = { serializer: name, total: Time.now - begin_at }
+    puts time.to_json if iterations > 1
   end
 end
 

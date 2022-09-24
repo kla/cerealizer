@@ -1,79 +1,105 @@
 require_relative "./setup"
 
-module Cerealizer
-  class ItemSerializer < ::Cerealizer::Base
-    attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
-  end
-
-  class OrderSerializer < ::Cerealizer::Base
-    attributes :id, :created_at, :updated_at, :paid
-    has_many :items, serializer: ItemSerializer
-  end
-end
-
-module Ams
-  class ItemSerializer < ::ActiveModel::Serializer
-    attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
-  end
-
-  class OrderSerializer < ::ActiveModel::Serializer
-    attributes :id, :created_at, :updated_at, :paid
-    has_many :items, serializer: ItemSerializer
-  end
-end
-
-module JsonApi
-  class ItemSerializer
-    include JSONAPI::Serializer
-    attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
-  end
-
-  class OrderSerializer
-    include JSONAPI::Serializer
-    attributes :id, :created_at, :updated_at, :paid
-    has_many :items, serializer: ItemSerializer
-  end
-end
-
-module Jbuildr
-  class OrderSerializer
-    def initialize(order)
-      @order = order
+module Serializers
+  module Cerealizer
+    class ItemSerializer < ::Cerealizer::Base
+      attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
     end
 
-    def to_json
-      Jbuilder.encode do |json|
-        json.order do
-          json.id @order.id
-          json.created_at @order.created_at
-          json.updated_at @order.updated_at
-          json.paid @order.paid
-          json.items do
-            json.array! @order.items do |item|
-              json.id item.id
-              json.order_id item.order_id
-              json.created_at item.updated_at
-              json.name item.name
-              json.price item.quantity
+    class OrderSerializer < ::Cerealizer::Base
+      include ::StandardSerializer
+      attributes :id, :created_at, :updated_at, :paid
+      has_many :items, serializer: ItemSerializer
+    end
+  end
+
+  module Ams
+    class ItemSerializer < ::ActiveModel::Serializer
+      attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
+    end
+
+    class OrderSerializer < ::ActiveModel::Serializer
+      include ::StandardSerializer
+      attributes :id, :created_at, :updated_at, :paid
+      has_many :items, serializer: ItemSerializer
+    end
+  end
+
+  module JsonApi
+    class ItemSerializer
+      include JSONAPI::Serializer
+      attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
+    end
+
+    class OrderSerializer
+      include ::StandardSerializer
+      include JSONAPI::Serializer
+      attributes :id, :created_at, :updated_at, :paid
+      has_many :items, serializer: ItemSerializer
+    end
+  end
+
+  module JbuilderEncode
+    class OrderSerializer
+      include ::StandardSerializer
+
+      def initialize(order)
+        @order = order
+      end
+
+      def to_json
+        Jbuilder.encode do |json|
+          json.order do
+            json.id @order.id
+            json.created_at @order.created_at
+            json.updated_at @order.updated_at
+            json.paid @order.paid
+            json.items do
+              json.array! @order.items do |item|
+                json.id item.id
+                json.order_id item.order_id
+                json.created_at item.updated_at
+                json.name item.name
+                json.price item.quantity
+              end
             end
           end
         end
       end
     end
   end
-end
 
-module Alba
-  class ItemSerializer
-    include Alba::Resource
-    attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
+  module Alba
+    class ItemSerializer
+      include ::Alba::Resource
+      attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
+    end
+
+    class OrderSerializer
+      include ::Alba::Resource
+      attributes :id, :created_at, :updated_at, :paid
+      many :items, resource: ItemSerializer
+
+      def self.to_json(object)
+        new(object).serialize
+      end
+    end
   end
 
-  class OrderSerializer
-    include Alba::Resource
-    attributes :id, :created_at, :updated_at, :paid
-    many :items, resource: ItemSerializer
+  module Panko
+    class ItemSerializer < ::Panko::Serializer
+      attributes :id, :order_id, :created_at, :updated_at, :name, :price, :quantity
+    end
+
+    class OrderSerializer < ::Panko::Serializer
+      attributes :id, :created_at, :updated_at, :paid
+      has_many :items, serializer: ItemSerializer
+
+      def self.to_json(object)
+        new.serialize_to_json(object)
+      end
+    end
   end
 end
 
-Setup.benchmark([ Cerealizer, Ams, JsonApi, Jbuildr, Alba ], ARGV[0])
+Setup.benchmark("Serializers::#{ARGV[0]}".constantize, ARGV[1].to_i)
