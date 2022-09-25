@@ -142,4 +142,4 @@ module Serializers
   end
 end
 
-Setup.benchmark("Serializers::#{ARGV[0]}".constantize, ARGV[1].to_i)
+Setup.benchmark("Serializers::#{ARGV[0]}".constantize, ARGV[1].to_i, ARGV[2] == "true")
