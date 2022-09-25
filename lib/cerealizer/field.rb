@@ -34,7 +34,7 @@ module Cerealizer
 
     def run_proc(callable, serializer)
       return serializer.instance_exec(&callable) if callable.is_a?(Proc)
-      return serializer.send(callable) if serializer.respond_to?(callable)
+      return serializer.public_send(callable) if serializer.respond_to?(callable)
       raise ArgumentError, "The :if option must be proc or method name"
     end
 
@@ -56,9 +56,9 @@ module Cerealizer
       object = serializer.object
 
       if method = field_options[:method]
-        object.respond_to?(method) ? object.send(method) : serializer.send(method)
+        object.respond_to?(method) ? object.public_send(method) : serializer.public_send(method)
       else
-        object.send(name)
+        object.public_send(name)
       end
     end
 
