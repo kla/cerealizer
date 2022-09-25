@@ -45,4 +45,14 @@ class AssociationsTest < TestCase
     assert_equal false, json.has_key?("items")
     assert_equal false, json.has_key?("user")
   end
+
+  it "writes" do
+    to = Serializers::OrderSerializer.new(order).to_json(tags: [ :full ])
+    as = Serializers::OrderSerializer.new(order).as_json(tags: [ :full ])
+    puts "to_json: #{to}"
+    puts "as_json: #{as}"
+    # assert_equal to, JSON.generate(as)
+    # puts "as_json: #{serialized_order.as_json}"
+    # puts "to_json: #{serialized_order.to_json}"
+  end
 end

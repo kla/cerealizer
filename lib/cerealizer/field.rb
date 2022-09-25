@@ -3,7 +3,7 @@ module Cerealizer
     attr_reader :name, :type, :field_options
 
     def initialize(name, type, options={})
-      @name = name.to_sym
+      @name = name.to_s
       @type = type.to_sym
       @field_options = { }
       @field_options[:method] = options[:method] if options[:method]
@@ -34,8 +34,8 @@ module Cerealizer
       raise ArgumentError, "The :if option must be proc or method name"
     end
 
-    def fetch_value(serializer, options={})
-      send("fetch_#{type}", serializer, options)
+    def fetch_value(serializer, writer, options={})
+      send("fetch_#{type}", serializer, writer, options)
     end
 
     def simple?
@@ -48,7 +48,7 @@ module Cerealizer
 
     private
 
-    def fetch_simple(serializer, _options={})
+    def get_value(serializer)
       object = serializer.object
 
       if method = field_options[:method]
@@ -58,17 +58,30 @@ module Cerealizer
       end
     end
 
-    def fetch_has_one(serializer, options)
-      assoc_object = fetch_simple(serializer)
-      field_options[:serializer].new(assoc_object).serializable_hash(options)
+    def fetch_simple(serializer, writer, options={})
+      value = get_value(serializer)
+      writer.push_value(value, name)
+      value
     end
 
-    def fetch_has_many(serializer, options)
+    def fetch_has_one(serializer, writer, options)
+      assoc_object = get_value(serializer)
+      serializer = field_options[:serializer].new(assoc_object)
+      serializer.serialize(writer, options.merge(key: name))
+    end
+
+    def fetch_has_many(serializer, writer, options)
+      # puts "!!!!!!!!!!!!!!! has_many"
+      writer.push_array(name)
       ser = field_options[:serializer].new(nil)
-      fetch_simple(serializer, options).map do |assoc_object|
+
+      get_value(serializer).each do |assoc_object|
         ser.instance_variable_set(:@object, assoc_object)
-        ser.serializable_hash(options)
+        ser.serialize(writer, options)
+        # writer.push_array_item(value, name)
       end
+
+      writer.pop
     end
   end
 end
