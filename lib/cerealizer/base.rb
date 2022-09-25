@@ -39,6 +39,7 @@ module Cerealizer
           next unless field.include?(self, options)
           field.fetch_value(self, writer, options)
         end
+
         writer.pop
       else
         writer.is_a?(HashWriter) ? nil : "null"

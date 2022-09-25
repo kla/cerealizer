@@ -10,7 +10,11 @@ module Cerealizer
       @field_options[:if] = options[:if] if options[:if]
       @field_options[:tags] = Array(options[:tags]).map(&:to_sym) if options[:tags]
       # @field_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
-      @field_options.merge!(options.slice(:serializer)) if association?
+
+      if association?
+        @serializer = options[:serializer]
+        raise ArgumentError, "A :serializer option is required for associations" unless @serializer
+      end
     end
 
     def include?(serializer, options={})
@@ -21,8 +25,8 @@ module Cerealizer
         options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).length > 0 : false
       elsif field_options[:if]
         run_proc(field_options[:if], serializer)
-      elsif options[:exclude_associations] && association?
-        false
+      # elsif options[:exclude_associations] && association?
+      #   false
       else
         true
       end
@@ -66,14 +70,14 @@ module Cerealizer
 
     def fetch_has_one(serializer, writer, options)
       assoc_object = get_value(serializer)
-      serializer = field_options[:serializer].new(assoc_object)
+      serializer = @serializer.new(assoc_object)
       serializer.serialize(writer, options.merge(key: name))
     end
 
     def fetch_has_many(serializer, writer, options)
       # puts "!!!!!!!!!!!!!!! has_many"
       writer.push_array(name)
-      ser = field_options[:serializer].new(nil)
+      ser = @serializer.new(nil)
 
       get_value(serializer).each do |assoc_object|
         ser.instance_variable_set(:@object, assoc_object)
