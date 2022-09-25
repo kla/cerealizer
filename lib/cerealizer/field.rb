@@ -39,7 +39,13 @@ module Cerealizer
     end
 
     def fetch_value(serializer, writer, options={})
-      send("fetch_#{type}", serializer, writer, options)
+      if type == :simple
+        fetch_simple(serializer, writer, options)
+      elsif type == :has_one
+        fetch_has_one(serializer, writer, options)
+      elsif type == :has_many
+        fetch_has_many(serializer, writer, options)
+      end
     end
 
     def simple?
