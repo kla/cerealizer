@@ -1,39 +1,54 @@
 module Cerealizer
   class HashWriter
     attr_reader :hash
+    attr_reader :stack
+    attr_reader :current
 
     def initialize
-      @hash = { }
+      @hash = @current = { }
+      @stack = [ ]
     end
 
-    def push_object(value=nil, key=nil)
-      # puts "push_object #{key}, #{value}"
-      if key
-        hash[key] = value
+    def push_object(key)
+      unless @current.is_a?(Array)
+        @current = @current[key] = { }
+      else
+        @current.push(@current = { })
       end
+
+      stack.push(current)
+      puts_debug("push_object #{key.inspect}")
     end
 
     def push_value(value, key)
-      # puts "push_value #{key}, #{value}"
-      hash[key] = value
+      current[key] = value
+      puts_debug("push_value #{key}, #{value}")
     end
 
     def push_array(key)
-      # puts "push_array #{key}"
-      hash[key] = [ ]
-    end
-
-    def push_array_item(value, key)
-      # puts "push_array_item #{key}, #{value}"
-      hash[key] << value
+      @current = current[key] = [ ]
+      stack.push(current)
+      puts_debug("push_array #{key}")
     end
 
     def pop
-      # do nothing
+      stack.pop
+      @current = stack.last
+      puts_debug("pop")
     end
 
     def value
       hash
+    end
+
+    private
+
+    def puts_debug(s)
+      return unless ENV["DEBUG"]
+      puts s
+      puts "  stack: #{stack}"
+      puts "  current: #{current}"
+      puts "  #{hash}\n\n"
     end
   end
 end

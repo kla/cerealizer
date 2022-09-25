@@ -75,20 +75,21 @@ module Cerealizer
     end
 
     def fetch_has_one(serializer, writer, options)
-      assoc_object = get_value(serializer)
-      serializer = @serializer.new(assoc_object)
-      serializer.serialize(writer, options.merge(key: name))
+      unless (assoc_object = get_value(serializer)) == nil
+        serializer = @serializer.new(assoc_object)
+        serializer.serialize(writer, options.merge(key: name))
+      else
+        writer.push_value(name, nil)
+      end
     end
 
     def fetch_has_many(serializer, writer, options)
-      # puts "!!!!!!!!!!!!!!! has_many"
       writer.push_array(name)
       ser = @serializer.new(nil)
 
       get_value(serializer).each do |assoc_object|
         ser.instance_variable_set(:@object, assoc_object)
-        ser.serialize(writer, options)
-        # writer.push_array_item(value, name)
+        ser.serialize(writer, options.merge(root: false)).value
       end
 
       writer.pop

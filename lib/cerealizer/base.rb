@@ -30,27 +30,27 @@ module Cerealizer
       @object = object
     end
 
+    def object_name
+      object.class.name.underscore
+    end
+
     def serialize(writer, options={})
-      if object
-        # puts "serialize #{options}"
-        writer.push_object(options[:key])
+      puts "serialize #{options}"
+      writer.push_object(options[:root] === false ? nil : (options[:key] || object_name))
 
-        self.class.fields.each do |field|
-          next unless field.include?(self, options)
-          field.fetch_value(self, writer, options)
-        end
-
-        writer.pop
-      else
-        writer.is_a?(HashWriter) ? nil : "null"
+      self.class.fields.each do |field|
+        next unless field.include?(self, options)
+        field.fetch_value(self, writer, options)
       end
 
+      writer.pop
       writer
     end
 
     def serializable_hash(options={})
-      # serialize(HashWriter.new, options).value
-      JSON.parse(to_json(options))
+      value = serialize(HashWriter.new, options).value
+      value = value[object_name] unless options[:include_root]
+      value
     end
     alias_method :as_json, :serializable_hash
 
