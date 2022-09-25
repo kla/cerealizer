@@ -14,8 +14,10 @@ module Factories
 
   def create_order(user=create_user)
     Order.create!(user_id: user.id, paid: 100.00).tap do |order|
-      order.items.create!(name: "Item 1", price: 10.00, quantity: 1)
-      order.items.create!(name: "Item 2", price: 20.00, quantity: 2)
+      25.times do |i|
+        i = i + 1
+        order.items.create!(name: "Item #{i}", price: i * 10, quantity: i)
+      end
     end
   end
 end
