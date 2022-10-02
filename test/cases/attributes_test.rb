@@ -5,7 +5,9 @@ class AttributesTest < TestCase
 
   it "serializes to a hash and json" do
     as = serializer.as_json(tags: [ :full ])
-    puts as
+    to = serializer.to_json(tags: [ :full ])
+    # puts as
+    puts to
     # to = serializer.to_json(tags: [ :full ])
     # assert_equal to, as.to_json
   end
