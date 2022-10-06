@@ -26,17 +26,9 @@ module Cerealizer
       writer.push_array(key ? key : nil)
     end
 
-    def push_array_item(key, value)
-      # puts "push_array_item #{key}, #{value}"
-    end
-
     def pop
       # puts "pop"
       writer.pop
-    end
-
-    def pop_all
-      writer.pop_all
     end
 
     def value
