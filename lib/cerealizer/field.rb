@@ -70,7 +70,7 @@ module Cerealizer
 
     def fetch_simple(serializer, writer, options={})
       value = get_value(serializer)
-      writer.push_value(value, name)
+      writer.push_value(name, value)
       value
     end
 
@@ -81,7 +81,7 @@ module Cerealizer
           serializer.serialize(writer, options)
         writer.pop
       else
-        writer.push_value(nil, name)
+        writer.push_value(name, nil)
       end
     end
 

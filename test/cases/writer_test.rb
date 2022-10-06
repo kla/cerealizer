@@ -4,9 +4,9 @@ class WriterTest < TestCase
   let(:simple) do
     writer.push_object
       writer.push_object("foo")
-        writer.push_value("bar", "baz")
-        writer.push_value(1, "number")
-        writer.push_value(true, "bool")
+        writer.push_value("baz", "bar")
+        writer.push_value("number", 1)
+        writer.push_value("bool", true)
       writer.pop
     writer.pop
     writer
@@ -15,11 +15,11 @@ class WriterTest < TestCase
   let(:nested_objects) do
     writer.push_object
       writer.push_object("foo")
-        writer.push_value("bar", "baz")
+        writer.push_value("baz", "bar")
         writer.push_object("nested")
-        writer.push_value("qux", "quux")
+        writer.push_value("quux", "qux")
       writer.pop
-      writer.push_value("blah", "bleh")
+      writer.push_value("bleh", "blah")
     writer.pop
     writer
   end
@@ -27,17 +27,17 @@ class WriterTest < TestCase
   let(:array_with_objects) do
     writer.push_object
       writer.push_object("foo")
-      writer.push_value("bar", "baz")
+      writer.push_value("baz", "bar")
       writer.push_array("array")
         writer.push_object
-          writer.push_value("bar", "baz")
+          writer.push_value("baz", "bar")
           writer.push_object("nested")
-            writer.push_value("qux", "quux")
+            writer.push_value("quux", "qux")
           writer.pop
-          writer.push_value("blah", "bleh")
+          writer.push_value("bleh", "blah")
         writer.pop
         writer.push_object
-          writer.push_value("bar", "baz")
+          writer.push_value("baz", "bar")
         writer.pop
       writer.pop
       writer.push_value("eh", "eh")

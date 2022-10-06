@@ -11,7 +11,7 @@ module Cerealizer
       writer.push_object(key)
     end
 
-    def push_value(value, key)
+    def push_value(key, value)
       # puts "push_value #{key}, #{value}"
       if value.is_a?(Time)
         value = value.iso8601(3)
@@ -26,7 +26,7 @@ module Cerealizer
       writer.push_array(key ? key : nil)
     end
 
-    def push_array_item(value, key)
+    def push_array_item(key, value)
       # puts "push_array_item #{key}, #{value}"
     end
 

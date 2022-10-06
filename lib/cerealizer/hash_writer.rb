@@ -20,7 +20,7 @@ module Cerealizer
       puts_debug("push_object #{key.inspect}")
     end
 
-    def push_value(value, key)
+    def push_value(key, value)
       current[key] = value
       puts_debug("push_value #{key}, #{value}")
     end
