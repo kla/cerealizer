@@ -17,38 +17,24 @@ module Cerealizer
       end
 
       stack.push(current)
-      puts_debug("push_object #{key.inspect}")
     end
 
     def push_value(key, value)
       current[key] = value
-      puts_debug("push_value #{key}, #{value}")
     end
 
     def push_array(key)
       @current = current[key] = [ ]
       stack.push(current)
-      puts_debug("push_array #{key}")
     end
 
     def pop
       stack.pop
       @current = stack.last
-      puts_debug("pop")
     end
 
     def value
       hash[nil]
-    end
-
-    private
-
-    def puts_debug(s)
-      return unless ENV["DEBUG"]
-      puts s
-      puts "  stack: #{stack}"
-      puts "  current: #{current}"
-      puts "  #{hash}\n\n"
     end
   end
 end

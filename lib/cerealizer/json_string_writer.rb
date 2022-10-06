@@ -7,12 +7,10 @@ module Cerealizer
     end
 
     def push_object(key=nil)
-      # puts "push_object #{key}, #{value}"
       writer.push_object(key)
     end
 
     def push_value(key, value)
-      # puts "push_value #{key}, #{value}"
       if value.is_a?(Time)
         value = value.iso8601(3)
       elsif value.is_a?(BigDecimal)
@@ -22,12 +20,10 @@ module Cerealizer
     end
 
     def push_array(key)
-      # puts "push_array #{key}"
-      writer.push_array(key ? key : nil)
+      writer.push_array(key)
     end
 
     def pop
-      # puts "pop"
       writer.pop
     end
 
