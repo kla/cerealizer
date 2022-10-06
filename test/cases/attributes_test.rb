@@ -3,17 +3,9 @@ require_relative "../test_helper"
 class AttributesTest < TestCase
   let(:serializer) { Serializers::UserSerializer.new(user) }
 
-  it "serializes to a hash and json" do
-    as = serializer.as_json(tags: [ :full ])
-    to = serializer.to_json(tags: [ :full ])
-    # puts as
-    puts to
-    # to = serializer.to_json(tags: [ :full ])
-    # assert_equal to, as.to_json
-  end
-
   it "accepts an include_root option" do
     assert_equal user.id, serializer.as_json(include_root: true)["user"]["id"]
+    assert_equal user.id, JSON.parse(serializer.to_json(include_root: true))["user"]["id"]
   end
 
   it "serializes to a hash using as_json" do
@@ -39,6 +31,7 @@ class AttributesTest < TestCase
 
   it "returns nil for a nil object" do
     assert_nil Serializers::UserSerializer.new(nil).as_json
+    assert_equal "null", Serializers::UserSerializer.new(nil).to_json
   end
 
   describe "with an :if condition" do
@@ -53,10 +46,5 @@ class AttributesTest < TestCase
       user.update!(permissions: "super_admin")
       assert Serializers::UserSerializer.new(user).as_json["super_admin"]
     end
-  end
-
-  it "writes as_json" do
-    puts "as_json: #{serializer.as_json(tags: [ :full ])}"
-    puts "to_json: #{serializer.to_json(tags: [ :full ])}"
   end
 end

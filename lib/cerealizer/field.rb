@@ -77,9 +77,11 @@ module Cerealizer
     def fetch_has_one(serializer, writer, options)
       unless (assoc_object = get_value(serializer)) == nil
         serializer = @serializer.new(assoc_object)
-        serializer.serialize(writer, options.merge(key: name))
+        writer.push_object(name)
+          serializer.serialize(writer, options)
+        writer.pop
       else
-        writer.push_value(name, nil)
+        writer.push_value(nil, name)
       end
     end
 
@@ -88,8 +90,10 @@ module Cerealizer
       ser = @serializer.new(nil)
 
       get_value(serializer).each do |assoc_object|
-        ser.instance_variable_set(:@object, assoc_object)
-        ser.serialize(writer, options.merge(root: false)).value
+        writer.push_object
+          ser.instance_variable_set(:@object, assoc_object)
+          ser.serialize(writer, options)
+        writer.pop
       end
 
       writer.pop

@@ -9,7 +9,7 @@ module Cerealizer
       @stack = [ ]
     end
 
-    def push_object(key)
+    def push_object(key=nil)
       unless @current.is_a?(Array)
         @current = @current[key] = { }
       else
@@ -38,7 +38,7 @@ module Cerealizer
     end
 
     def value
-      hash
+      hash[nil]
     end
 
     private

@@ -35,27 +35,36 @@ module Cerealizer
     end
 
     def serialize(writer, options={})
-      puts "serialize #{options}"
-      writer.push_object(options[:root] === false ? nil : (options[:key] || object_name))
+      options = options.reverse_merge(include_root: false)
 
       self.class.fields.each do |field|
         next unless field.include?(self, options)
         field.fetch_value(self, writer, options)
       end
 
-      writer.pop
       writer
     end
 
     def serializable_hash(options={})
-      value = serialize(HashWriter.new, options).value
-      value = value[object_name] unless options[:include_root]
-      value
+      return nil unless object
+      serialize_to_writer(HashWriter.new, options).value
     end
     alias_method :as_json, :serializable_hash
 
     def to_json(options={})
-      serialize(JsonStringWriter.new, options).value
+      return "null" unless object
+      serialize_to_writer(JsonStringWriter.new, options).value
+    end
+
+    private
+
+    def serialize_to_writer(writer, options={})
+      writer.push_object
+        writer.push_object(object.class.name.underscore) if options[:include_root]
+          serialize(writer, options)
+        writer.pop if options[:include_root]
+      writer.pop
+      writer
     end
   end
 end

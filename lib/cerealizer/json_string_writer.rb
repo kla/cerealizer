@@ -8,7 +8,7 @@ module Cerealizer
 
     def push_object(key=nil)
       # puts "push_object #{key}, #{value}"
-      writer.push_object(key ? key : nil)
+      writer.push_object(key)
     end
 
     def push_value(value, key)
@@ -33,6 +33,10 @@ module Cerealizer
     def pop
       # puts "pop"
       writer.pop
+    end
+
+    def pop_all
+      writer.pop_all
     end
 
     def value
