@@ -1,15 +1,15 @@
 module Cerealizer
-  class Field
-    attr_reader :name, :type, :field_options
+  class Attribute
+    attr_reader :name, :type, :attribute_options
 
     def initialize(name, type, options={})
       @name = name.to_s
       @type = type.to_sym
-      @field_options = { }
-      @field_options[:method] = options[:method] if options[:method]
-      @field_options[:if] = options[:if] if options[:if]
-      @field_options[:tags] = Array(options[:tags]).map(&:to_sym) if options[:tags]
-      # @field_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
+      @attribute_options = { }
+      @attribute_options[:method] = options[:method] if options[:method]
+      @attribute_options[:if] = options[:if] if options[:if]
+      @attribute_options[:tags] = Array(options[:tags]).map(&:to_sym) if options[:tags]
+      # @attribute_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
 
       if association?
         @serializer = options[:serializer]
@@ -19,12 +19,12 @@ module Cerealizer
 
     def include?(serializer, options={})
       # no need to do all the checks for this common case
-      return true if field_options.blank?
+      return true if attribute_options.blank?
 
-      if field_options[:tags].present?
-        options[:tags].present? ? (field_options[:tags] & Array(options[:tags])).length > 0 : false
-      elsif field_options[:if]
-        run_proc(field_options[:if], serializer)
+      if attribute_options[:tags].present?
+        options[:tags].present? ? (attribute_options[:tags] & Array(options[:tags])).length > 0 : false
+      elsif attribute_options[:if]
+        run_proc(attribute_options[:if], serializer)
       # elsif options[:exclude_associations] && association?
       #   false
       else
@@ -61,7 +61,7 @@ module Cerealizer
     def get_value(serializer)
       object = serializer.object
 
-      if method = field_options[:method]
+      if method = attribute_options[:method]
         object.respond_to?(method) ? object.public_send(method) : serializer.public_send(method)
       else
         object.public_send(name)

@@ -1,6 +1,6 @@
 module Cerealizer
   class Base
-    class_attribute :fields
+    class_attribute :_attributes
     attr_reader :object
 
     def self.attributes(*names)
@@ -8,22 +8,22 @@ module Cerealizer
     end
 
     def self.attribute(name, options={})
-      add_field(name, :simple, options)
+      add_attribute(name, :simple, options)
     end
 
     def self.has_one(name, options={})
       raise ArgumentError, "has_one requires a serializer option" unless options[:serializer]
-      self.add_field(name, :has_one, options)
+      self.add_attribute(name, :has_one, options)
     end
 
     def self.has_many(name, options={})
       raise ArgumentError, "has_many requires a serializer option" unless options[:serializer]
-      self.add_field(name, :has_many, options)
+      self.add_attribute(name, :has_many, options)
     end
 
-    def self.add_field(name, type, options)
-      self.fields ||= [ ]
-      self.fields << Field.new(name, type, options)
+    def self.add_attribute(name, type, options)
+      self._attributes ||= [ ]
+      self._attributes << Attribute.new(name, type, options)
     end
 
     def initialize(object)
@@ -37,9 +37,9 @@ module Cerealizer
     def serialize(writer, options={})
       options = options.reverse_merge(include_root: false)
 
-      self.class.fields.each do |field|
-        next unless field.include?(self, options)
-        field.fetch_value(self, writer, options)
+      self.class._attributes.each do |attribute|
+        next unless attribute.include?(self, options)
+        attribute.fetch_value(self, writer, options)
       end
 
       writer
