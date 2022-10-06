@@ -9,6 +9,7 @@ require "jsonapi/serializer"
 require "jbuilder"
 require "alba"
 require "panko_serializer"
+require "ruby-prof"
 require_relative "../test/models/order"
 require_relative "../test/models/item"
 require_relative "../test/models/user"
@@ -29,7 +30,8 @@ class Setup
   include Database
   include Factories
 
-  def self.benchmark(klass, iterations)
+  def self.benchmark(klass, iterations, profile)
+    RubyProf.start if profile
     begin_at = Time.now
     order = Order.first
     name = klass.to_s.gsub("Serializers::", "")
@@ -41,6 +43,12 @@ class Setup
 
     time = { serializer: name, total: Time.now - begin_at }
     puts time.to_json if iterations > 1
+
+    if profile
+      results = RubyProf.stop
+      RubyProf::CallTreePrinter.new(results).print
+      FileUtils.mv("profile.callgrind.out.#{Process.pid}", "../callgrind.txt")
+    end
   end
 end
 

@@ -73,6 +73,7 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.4.3)
       loofah (~> 2.3)
+    ruby-prof (1.4.3)
     sqlite3 (1.5.0-arm64-darwin)
     sqlite3 (1.5.0-x86_64-linux)
     tzinfo (2.0.5)
@@ -93,6 +94,7 @@ DEPENDENCIES
   multi_json
   oj
   panko_serializer
+  ruby-prof
   sqlite3
 
 BUNDLED WITH

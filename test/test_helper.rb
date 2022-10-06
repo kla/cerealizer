@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "minitest/pride"
+require "minitest/focus"
 require "active_record"
 require "oj"
 require_relative "../lib/cerealizer"

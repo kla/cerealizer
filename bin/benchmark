@@ -7,10 +7,13 @@ args = ARGV.dup
 type = "#{args.shift}.rb"
 serializers = [ ]
 iterations = 50000
+profile = false
 
 args.each do |arg|
   if arg =~ /[0-9]+/
     iterations = arg.to_i
+  elsif arg == "profile"
+    profile = true
   elsif SERIALIZERS.include?(arg)
     serializers << arg
   end
@@ -22,7 +25,7 @@ times = [ ]
 puts "Running #{iterations} iterations..." if iterations > 1
 
 serializers.each do |serializer|
-  command = "ruby #{type} #{serializer} #{iterations}"
+  command = "ruby #{type} #{serializer} #{iterations} #{profile}"
 
   if iterations == 1
     puts `#{command}`

@@ -22,6 +22,8 @@ GEM
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     minitest (5.16.3)
+    minitest-focus (1.3.1)
+      minitest (>= 4, < 6)
     multi_json (1.15.0)
     oj (3.13.21)
     rake (13.0.6)
@@ -38,6 +40,7 @@ DEPENDENCIES
   activerecord (>= 5.0.0)
   cerealizer!
   minitest
+  minitest-focus
   oj
   rake
   sqlite3
