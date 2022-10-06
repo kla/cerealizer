@@ -30,13 +30,7 @@ module Cerealizer
       @object = object
     end
 
-    def object_name
-      object.class.name.underscore
-    end
-
     def serialize(writer, options={})
-      options = options.reverse_merge(include_root: false)
-
       self.class._attributes.each do |attribute|
         next unless attribute.include?(self, options)
         attribute.fetch_value(self, writer, options)
