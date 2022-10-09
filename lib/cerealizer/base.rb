@@ -1,7 +1,7 @@
 module Cerealizer
   class Base
     class_attribute :_attributes
-    attr_reader :object
+    attr_reader :object, :serialization_options
 
     def self.attributes(*names)
       Array(names).flatten.each { |name| attribute(name) }
@@ -26,8 +26,9 @@ module Cerealizer
       self._attributes << Attribute.new(name, type, options)
     end
 
-    def initialize(object)
+    def initialize(object, options={})
       @object = object
+      @serialization_options = options
     end
 
     def serialize(writer)
@@ -39,24 +40,24 @@ module Cerealizer
       writer
     end
 
-    def serializable_hash(options={})
+    def serializable_hash
       return nil unless object
-      serialize_to_writer(HashWriter.new, options).value
+      serialize_to_writer(HashWriter.new).value
     end
     alias_method :as_json, :serializable_hash
 
-    def to_json(options={})
+    def to_json
       return "null" unless object
-      serialize_to_writer(JsonStringWriter.new, options).value
+      serialize_to_writer(JsonStringWriter.new).value
     end
 
     private
 
-    def serialize_to_writer(writer, options={})
+    def serialize_to_writer(writer)
       writer.push_object
-        writer.push_object(object.class.name.underscore) if options[:include_root]
+        writer.push_object(object.class.name.underscore) if serialization_options[:include_root]
           serialize(writer)
-        writer.pop if options[:include_root]
+        writer.pop if serialization_options[:include_root]
       writer.pop
       writer
     end

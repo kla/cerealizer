@@ -4,12 +4,12 @@ class AttributesTest < TestCase
   let(:serializer) { Serializers::UserSerializer.new(user) }
 
   it "accepts an include_root option" do
-    assert_equal user.id, serializer.as_json(include_root: true)["user"]["id"]
-    assert_equal user.id, JSON.parse(serializer.to_json(include_root: true))["user"]["id"]
+    assert_equal user.id, Serializers::UserSerializer.new(user, include_root: true).as_json["user"]["id"]
+    assert_equal user.id, JSON.parse(Serializers::UserSerializer.new(user, include_root: true).to_json)["user"]["id"]
   end
 
   it "serializes to a hash using as_json" do
-    hash = serializer.as_json(tags: [ :full ])
+    hash = serializer.as_json
     assert_instance_of Hash, hash
     assert_equal user.id, hash["id"]
     assert_equal user.created_at, hash["created_at"]
@@ -20,7 +20,7 @@ class AttributesTest < TestCase
   end
 
   it "serializes to a json string using to_json" do
-    json = Serializers::UserSerializer.new(user).to_json(tags: [ :full ])
+    json = Serializers::UserSerializer.new(user).to_json
     assert_instance_of String, json
     assert_user user, JSON.parse(json)
   end

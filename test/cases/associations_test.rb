@@ -43,12 +43,12 @@ class AssociationsTest < TestCase
   end
 
   describe "serializing to a json string" do
-    let(:serialized_order) { JSON.parse(serializer.to_json(tags: [ :full ])) }
+    let(:serialized_order) { JSON.parse(serializer.to_json) }
     serialization_tests
   end
 
   describe "serializing to a hash" do
-    let(:serialized_order) { serializer.as_json(tags: [ :full ]) }
+    let(:serialized_order) { serializer.as_json }
     serialization_tests
   end
 
