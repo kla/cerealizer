@@ -26,37 +26,40 @@ module Cerealizer
       self._attributes << Attribute.new(name, type, options)
     end
 
-    def initialize(object, options={})
-      @object = object
+    def initialize(options={})
       @serialization_options = options
     end
 
-    def serialize(writer)
+    def serialize(writer, object)
+      @object = object
+
       self.class._attributes.each do |attribute|
         next unless attribute.include?(self)
         attribute.fetch_value(self, writer)
       end
 
       writer
+    ensure
+      @object = nil
     end
 
-    def serializable_hash
+    def serializable_hash(object)
       return nil unless object
-      serialize_to_writer(HashWriter.new).value
+      serialize_to_writer(HashWriter.new, object).value
     end
     alias_method :as_json, :serializable_hash
 
-    def to_json
+    def to_json(object)
       return "null" unless object
-      serialize_to_writer(JsonStringWriter.new).value
+      serialize_to_writer(JsonStringWriter.new, object).value
     end
 
     private
 
-    def serialize_to_writer(writer)
+    def serialize_to_writer(writer, object)
       writer.push_object
         writer.push_object(object.class.name.underscore) if serialization_options[:include_root]
-          serialize(writer)
+          serialize(writer, object)
         writer.pop if serialization_options[:include_root]
       writer.pop
       writer
