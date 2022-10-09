@@ -32,7 +32,7 @@ module Cerealizer
       @serialization_options = SerializationOptions.new(options)
     end
 
-    def serialize(writer, object)
+    def serialize_attributes(writer, object)
       @object = object
 
       attributes.each do |attribute|
@@ -56,12 +56,20 @@ module Cerealizer
       serialize_to_writer(JsonStringWriter.new, object).value
     end
 
+    def self.serialize(object, options={})
+      new(options).to_json(object)
+    end
+
+    def self.serialize_to_hash(object, options={})
+      new(options).as_json(object)
+    end
+
     private
 
     def serialize_to_writer(writer, object)
       writer.push_object
         writer.push_object(object.class.name.underscore) if serialization_options.include_root
-          serialize(writer, object)
+          serialize_attributes(writer, object)
         writer.pop if serialization_options.include_root
       writer.pop
       writer

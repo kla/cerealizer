@@ -71,7 +71,7 @@ module Cerealizer
     def fetch_has_one(serializer, writer)
       unless (assoc_object = get_value(serializer)) == nil
         writer.push_object(name)
-          @serializer.new(attribute_options[:serialization_options]).serialize(writer, assoc_object)
+          @serializer.new(attribute_options[:serialization_options]).serialize_attributes(writer, assoc_object)
         writer.pop
       else
         writer.push_value(name, nil)
@@ -84,7 +84,7 @@ module Cerealizer
 
       get_value(serializer).each do |assoc_object|
         writer.push_object
-          has_many_serializer.serialize(writer, assoc_object)
+          has_many_serializer.serialize_attributes(writer, assoc_object)
         writer.pop
       end
 

@@ -1,7 +1,7 @@
 require_relative "../test_helper"
 
 class AssociationsTest < TestCase
-  let(:serializer) { Serializers::OrderSerializer.new }
+  let(:serializer) { Serializers::OrderSerializer }
 
   def self.serialization_tests
     it "includes has_many associations" do
@@ -37,17 +37,17 @@ class AssociationsTest < TestCase
   end
 
   describe "serializing to a json string" do
-    let(:serialized_order) { JSON.parse(serializer.to_json(order)) }
+    let(:serialized_order) { JSON.parse(serializer.serialize(order)) }
     serialization_tests
   end
 
   describe "serializing to a hash" do
-    let(:serialized_order) { serializer.as_json(order) }
+    let(:serialized_order) { serializer.serialize_to_hash(order) }
     serialization_tests
   end
 
   it "accepts an exclude_associations option" do
-    json = Serializers::OrderSerializer.new(exclude_associations: true).as_json(order)
+    json = serializer.serialize_to_hash(order, exclude_associations: true)
     assert_equal false, json.has_key?("items")
     assert_equal false, json.has_key?("user")
   end
