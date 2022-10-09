@@ -3,11 +3,13 @@ module Cerealizer
     attr_reader :include_root
     attr_reader :exclude_associations
     attr_reader :except
+    attr_reader :only
 
     def initialize(options)
       @include_root = !!options[:include_root]
       @exclude_associations = !!options[:exclude_associations]
       @except = options[:except] ? Array(options[:except]).map(&:to_s) : nil
+      @only = options[:only] ? Array(options[:only]).map(&:to_s) : nil
     end
   end
 end

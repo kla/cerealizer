@@ -40,6 +40,14 @@ class AttributesTest < TestCase
     refute hash.key?("full_name")
   end
 
+  it "accepts an only option" do
+    hash = Serializers::UserSerializer.new(only: :full_name).as_json(user)
+    assert_equal %w( full_name ), hash.keys
+
+    hash = Serializers::UserSerializer.new(only: %i[ id full_name ]).as_json(user)
+    assert_equal %w( id full_name ), hash.keys
+  end
+
   describe "with an :if condition" do
     it "accepts a symbol" do
       refute serializer.as_json(user).has_key?("admin")
