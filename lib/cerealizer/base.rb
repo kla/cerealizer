@@ -1,3 +1,5 @@
+require_relative "./serialization_options"
+
 module Cerealizer
   class Base
     class_attribute :_attributes
@@ -27,7 +29,7 @@ module Cerealizer
     end
 
     def initialize(options={})
-      @serialization_options = options
+      @serialization_options = SerializationOptions.new(options)
     end
 
     def serialize(writer, object)
@@ -58,9 +60,9 @@ module Cerealizer
 
     def serialize_to_writer(writer, object)
       writer.push_object
-        writer.push_object(object.class.name.underscore) if serialization_options[:include_root]
+        writer.push_object(object.class.name.underscore) if serialization_options.include_root
           serialize(writer, object)
-        writer.pop if serialization_options[:include_root]
+        writer.pop if serialization_options.include_root
       writer.pop
       writer
     end
