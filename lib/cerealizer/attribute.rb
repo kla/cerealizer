@@ -8,6 +8,7 @@ module Cerealizer
       @attribute_options = { }
       @attribute_options[:method] = options[:method] if options[:method]
       @attribute_options[:if] = options[:if] if options[:if]
+      @attribute_options[:serialization_options] = options[:serialization_options] if options[:serialization_options]
 
       if association?
         @serializer = options[:serializer]
@@ -70,7 +71,7 @@ module Cerealizer
     def fetch_has_one(serializer, writer)
       unless (assoc_object = get_value(serializer)) == nil
         writer.push_object(name)
-          @serializer.new.serialize(writer, assoc_object)
+          @serializer.new(attribute_options[:serialization_options]).serialize(writer, assoc_object)
         writer.pop
       else
         writer.push_value(name, nil)
@@ -79,7 +80,7 @@ module Cerealizer
 
     def fetch_has_many(serializer, writer)
       writer.push_array(name)
-      has_many_serializer = @serializer.new
+      has_many_serializer = @serializer.new(attribute_options[:serialization_options])
 
       get_value(serializer).each do |assoc_object|
         writer.push_object

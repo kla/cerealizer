@@ -61,4 +61,19 @@ class AttributesTest < TestCase
       assert Serializers::UserSerializer.new.as_json(user)["super_admin"]
     end
   end
+
+  describe "association with serialization_options" do
+    class TestSerializer < Cerealizer::Base
+      attribute :id
+      has_one :user, serializer: Serializers::UserSerializer, serialization_options: { only: :first_name }
+      has_many :items, serializer: Serializers::ItemSerializer, serialization_options: { only: :order_id }
+    end
+
+    it "accepts serialization_options for associations" do
+      hash = TestSerializer.new.as_json(order)
+      assert_equal %w( id user items), hash.keys
+      assert_equal %w( first_name ), hash["user"].keys
+      assert_equal %w( order_id ), hash["items"][0].keys
+    end
+  end
 end

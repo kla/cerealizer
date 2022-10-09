@@ -6,6 +6,7 @@ module Cerealizer
     attr_reader :only
 
     def initialize(options)
+      return unless options
       @include_root = !!options[:include_root]
       @exclude_associations = !!options[:exclude_associations]
       @except = options[:except] ? Array(options[:except]).map(&:to_s) : nil
