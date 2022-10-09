@@ -25,10 +25,6 @@ class AttributesTest < TestCase
     assert_user user, JSON.parse(json)
   end
 
-  # it "does not include untagged attributes" do
-  #   assert_equal false, serializer.as_json.has_key?("full_name")
-  # end
-
   it "returns nil for a nil object" do
     assert_nil Serializers::UserSerializer.new.as_json(nil)
     assert_equal "null", Serializers::UserSerializer.new.to_json(nil)

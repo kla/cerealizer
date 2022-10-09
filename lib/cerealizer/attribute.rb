@@ -8,8 +8,6 @@ module Cerealizer
       @attribute_options = { }
       @attribute_options[:method] = options[:method] if options[:method]
       @attribute_options[:if] = options[:if] if options[:if]
-      @attribute_options[:tags] = Array(options[:tags]).map(&:to_sym) if options[:tags]
-      # @attribute_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
 
       if association?
         @serializer = options[:serializer]
@@ -20,8 +18,6 @@ module Cerealizer
     def include?(serializer)
       if attribute_options.blank?
         true
-      # elsif attribute_options[:tags].present?
-      #   attribute_options[:tags] & Array(options[:tags])).length > 0 : false
       elsif attribute_options[:if]
         run_proc(attribute_options[:if], serializer)
       else

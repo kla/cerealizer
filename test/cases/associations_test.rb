@@ -23,12 +23,6 @@ class AssociationsTest < TestCase
       assert_user user, serialized_order["user"]
     end
 
-    # it "does not include untagged associations" do
-    #   json = Serializers::OrderSerializer.new(order).as_json
-    #   assert_equal false, json.has_key?("items")
-    #   assert_equal false, json.has_key?("full_name")
-    # end
-
     it "returns nil for a nil has_one object" do
       order.user = nil
       order.save!
