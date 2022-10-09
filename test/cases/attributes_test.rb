@@ -30,6 +30,16 @@ class AttributesTest < TestCase
     assert_equal "null", Serializers::UserSerializer.new.to_json(nil)
   end
 
+  it "accepts an except option" do
+    hash = Serializers::UserSerializer.new(except: :full_name).as_json(user)
+    assert hash.key?("id")
+    refute hash.key?("full_name")
+
+    hash = Serializers::UserSerializer.new(except: %i[ id full_name ]).as_json(user)
+    refute hash.key?("id")
+    refute hash.key?("full_name")
+  end
+
   describe "with an :if condition" do
     it "accepts a symbol" do
       refute serializer.as_json(user).has_key?("admin")

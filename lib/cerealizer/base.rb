@@ -70,6 +70,7 @@ module Cerealizer
     def attributes
       @attributes ||= self.class._attributes.each_with_object([ ]) do |attribute, attributes|
         next if serialization_options.exclude_associations && attribute.association?
+        next if serialization_options.except && serialization_options.except.include?(attribute.name)
         attributes << attribute
       end
     end
