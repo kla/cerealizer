@@ -45,11 +45,10 @@ module Cerealizer
       @object = nil
     end
 
-    def serializable_hash(object)
+    def as_json(object)
       return nil unless object
       serialize_to_writer(HashWriter.new, object).value
     end
-    alias_method :as_json, :serializable_hash
 
     def to_json(object)
       return "null" unless object
