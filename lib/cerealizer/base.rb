@@ -30,10 +30,10 @@ module Cerealizer
       @object = object
     end
 
-    def serialize(writer, options={})
+    def serialize(writer)
       self.class._attributes.each do |attribute|
-        next unless attribute.include?(self, options)
-        attribute.fetch_value(self, writer, options)
+        next unless attribute.include?(self)
+        attribute.fetch_value(self, writer)
       end
 
       writer
@@ -55,7 +55,7 @@ module Cerealizer
     def serialize_to_writer(writer, options={})
       writer.push_object
         writer.push_object(object.class.name.underscore) if options[:include_root]
-          serialize(writer, options)
+          serialize(writer)
         writer.pop if options[:include_root]
       writer.pop
       writer
