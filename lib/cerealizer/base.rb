@@ -35,7 +35,7 @@ module Cerealizer
     def serialize(writer, object)
       @object = object
 
-      self.class._attributes.each do |attribute|
+      attributes.each do |attribute|
         next unless attribute.include?(self)
         attribute.fetch_value(self, writer)
       end
@@ -65,6 +65,13 @@ module Cerealizer
         writer.pop if serialization_options.include_root
       writer.pop
       writer
+    end
+
+    def attributes
+      @attributes ||= self.class._attributes.each_with_object([ ]) do |attribute, attributes|
+        next if serialization_options.exclude_associations && attribute.association?
+        attributes << attribute
+      end
     end
   end
 end

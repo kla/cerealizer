@@ -52,9 +52,9 @@ class AssociationsTest < TestCase
     serialization_tests
   end
 
-  # it "accepts an exclude_associations option" do
-  #   json = Serializers::OrderSerializer.new(order).as_json(exclude_associations: true)
-  #   assert_equal false, json.has_key?("items")
-  #   assert_equal false, json.has_key?("user")
-  # end
+  it "accepts an exclude_associations option" do
+    json = Serializers::OrderSerializer.new(exclude_associations: true).as_json(order)
+    assert_equal false, json.has_key?("items")
+    assert_equal false, json.has_key?("user")
+  end
 end

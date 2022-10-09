@@ -24,8 +24,6 @@ module Cerealizer
       #   attribute_options[:tags] & Array(options[:tags])).length > 0 : false
       elsif attribute_options[:if]
         run_proc(attribute_options[:if], serializer)
-      # elsif options[:exclude_associations] && association?
-      #   false
       else
         true
       end
