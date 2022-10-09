@@ -3,32 +3,43 @@ require_relative "./setup"
 module Serializers
   module Cerealizer
     class OrderSerializer < ::Cerealizer::Base
-      include ::StandardSerializer
       attributes :id, :created_at, :updated_at, :paid
+
+      def self.serialize(object)
+        new.to_json(object)
+      end
     end
   end
 
   module Ams
     class OrderSerializer < ::ActiveModel::Serializer
-      include ::StandardSerializer
       attributes :id, :created_at, :updated_at, :paid
+
+      def self.serialize(object)
+        new(object).to_json
+      end
     end
   end
 
   module JsonApi
     class OrderSerializer
-      include ::StandardSerializer
       include JSONAPI::Serializer
       attributes :id, :created_at, :updated_at, :paid
+
+      def self.serialize(object)
+        new(object).to_json
+      end
     end
   end
 
   module JbuilderEncode
     class OrderSerializer
-      include ::StandardSerializer
-
       def initialize(order)
         @order = order
+      end
+
+      def self.serialize(object)
+        new(object).to_json
       end
 
       def to_json
@@ -49,7 +60,7 @@ module Serializers
       include ::Alba::Resource
       attributes :id, :created_at, :updated_at, :paid
 
-      def self.to_json(object)
+      def self.serialize(object)
         new(object).serialize
       end
     end
@@ -59,7 +70,7 @@ module Serializers
     class OrderSerializer < ::Panko::Serializer
       attributes :id, :created_at, :updated_at, :paid
 
-      def self.to_json(object)
+      def self.serialize(object)
         new.serialize_to_json(object)
       end
     end
@@ -67,10 +78,12 @@ module Serializers
 
   module Hash
     class OrderSerializer
-      include ::StandardSerializer
-
       def initialize(order)
         @order = order
+      end
+
+      def self.serialize(object)
+        new(object).to_json
       end
 
       def to_json
