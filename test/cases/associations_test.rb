@@ -6,7 +6,7 @@ class AssociationsTest < TestCase
   def self.serialization_tests
     it "includes has_many associations" do
       items = serialized_order["items"]
-      assert_equal 2, items.length
+      assert_equal 25, items.length
       assert_equal "Item 1", items[0]["name"]
       assert_equal "Item 2", items[1]["name"]
       assert_equal "10.0", items[0]["price"].to_s
