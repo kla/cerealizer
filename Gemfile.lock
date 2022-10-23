@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     cerealizer (0.1.0)
-      activesupport (>= 5.0.0)
+      activesupport
       multi_json
 
 GEM
@@ -37,7 +37,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  activerecord (>= 5.0.0)
+  activerecord
   cerealizer!
   minitest
   minitest-focus
