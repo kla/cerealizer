@@ -7,9 +7,12 @@ module Serializers
     end
 
     class OrderSerializer < ::Cerealizer::Base
-      include ::StandardSerializer
       attributes :id, :created_at, :updated_at, :paid
       has_many :items, serializer: ItemSerializer
+
+      def self.serialize(object)
+        new.to_json(object)
+      end
     end
   end
 
@@ -19,9 +22,12 @@ module Serializers
     end
 
     class OrderSerializer < ::ActiveModel::Serializer
-      include ::StandardSerializer
       attributes :id, :created_at, :updated_at, :paid
       has_many :items, serializer: ItemSerializer
+
+      def self.serialize(object)
+        new(object).to_json
+      end
     end
   end
 
@@ -32,19 +38,24 @@ module Serializers
     end
 
     class OrderSerializer
-      include ::StandardSerializer
       include JSONAPI::Serializer
       attributes :id, :created_at, :updated_at, :paid
       has_many :items, serializer: ItemSerializer
+
+      def self.serialize(object)
+        new(object, include: %i[ items ]).to_json
+      end
     end
   end
 
   module JbuilderEncode
     class OrderSerializer
-      include ::StandardSerializer
-
       def initialize(order)
         @order = order
+      end
+
+      def self.serialize(object)
+        new(object).to_json
       end
 
       def to_json
@@ -58,9 +69,11 @@ module Serializers
               json.array! @order.items do |item|
                 json.id item.id
                 json.order_id item.order_id
-                json.created_at item.updated_at
+                json.created_at item.created_at
+                json.updated_at item.updated_at
                 json.name item.name
-                json.price item.quantity
+                json.price item.price
+                json.quantity item.quantity
               end
             end
           end
@@ -80,7 +93,7 @@ module Serializers
       attributes :id, :created_at, :updated_at, :paid
       many :items, resource: ItemSerializer
 
-      def self.to_json(object)
+      def self.serialize(object)
         new(object).serialize
       end
     end
@@ -95,7 +108,7 @@ module Serializers
       attributes :id, :created_at, :updated_at, :paid
       has_many :items, serializer: ItemSerializer
 
-      def self.to_json(object)
+      def self.serialize(object)
         new.serialize_to_json(object)
       end
     end
@@ -110,15 +123,25 @@ module Serializers
       end
 
       def serializable_hash
-        { id: @item.id, order_id: @item.order_id, created_at: @item.updated_at, name: @item.name, price: @item.quantity }
+        {
+          id: @item.id,
+          order_id: @item.order_id,
+          created_at: @item.created_at,
+          updated_at: @item.updated_at,
+          name: @item.name,
+          price: @item.price,
+          quantity: @item.quantity,
+        }
       end
     end
 
     class OrderSerializer
-      include ::StandardSerializer
-
       def initialize(order)
         @order = order
+      end
+
+      def self.serialize(object)
+        new(object).to_json
       end
 
       def serializable_hash

@@ -2,7 +2,7 @@ PATH
   remote: ..
   specs:
     cerealizer (0.1.0)
-      activesupport (>= 5.0.0)
+      activesupport
       multi_json
 
 GEM

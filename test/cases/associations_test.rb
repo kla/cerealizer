@@ -1,12 +1,12 @@
 require_relative "../test_helper"
 
 class AssociationsTest < TestCase
-  let(:serializer) { Serializers::OrderSerializer.new(order) }
+  let(:serializer) { Serializers::OrderSerializer }
 
   def self.serialization_tests
     it "includes has_many associations" do
       items = serialized_order["items"]
-      assert_equal 2, items.length
+      assert_equal 25, items.length
       assert_equal "Item 1", items[0]["name"]
       assert_equal "Item 2", items[1]["name"]
       assert_equal "10.0", items[0]["price"].to_s
@@ -23,12 +23,6 @@ class AssociationsTest < TestCase
       assert_user user, serialized_order["user"]
     end
 
-    it "does not include untagged associations" do
-      json = Serializers::OrderSerializer.new(order).as_json
-      assert_equal false, json.has_key?("items")
-      assert_equal false, json.has_key?("full_name")
-    end
-
     it "returns nil for a nil has_one object" do
       order.user = nil
       order.save!
@@ -43,18 +37,18 @@ class AssociationsTest < TestCase
   end
 
   describe "serializing to a json string" do
-    let(:serialized_order) { JSON.parse(serializer.to_json(tags: [ :full ])) }
+    let(:serialized_order) { JSON.parse(serializer.serialize(order)) }
     serialization_tests
   end
 
   describe "serializing to a hash" do
-    let(:serialized_order) { serializer.as_json(tags: [ :full ]) }
+    let(:serialized_order) { serializer.serialize_to_hash(order) }
     serialization_tests
   end
 
-  # it "accepts an exclude_associations option" do
-  #   json = Serializers::OrderSerializer.new(order).as_json(exclude_associations: true)
-  #   assert_equal false, json.has_key?("items")
-  #   assert_equal false, json.has_key?("user")
-  # end
+  it "accepts an exclude_associations option" do
+    json = serializer.serialize_to_hash(order, exclude_associations: true)
+    assert_equal false, json.has_key?("items")
+    assert_equal false, json.has_key?("user")
+  end
 end

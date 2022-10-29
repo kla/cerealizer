@@ -16,16 +16,6 @@ require_relative "../test/models/user"
 require_relative "../test/factories"
 require_relative "../test/database"
 
-module StandardSerializer
-  extend ActiveSupport::Concern
-
-  class_methods do
-    def to_json(object)
-      new(object).to_json
-    end
-  end
-end
-
 class Setup
   include Database
   include Factories
@@ -36,7 +26,7 @@ class Setup
     order = Order.first
     name = klass.to_s.gsub("Serializers::", "")
     iterations.times do
-      json = klass.const_get("OrderSerializer").to_json(order.reload)
+      json = klass.const_get("OrderSerializer").serialize(order.reload)
       raise "Expected JSON to be a String" unless json.is_a?(String)
       puts "#{name}, #{json}" if iterations == 1
     end

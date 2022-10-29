@@ -8,8 +8,7 @@ module Cerealizer
       @attribute_options = { }
       @attribute_options[:method] = options[:method] if options[:method]
       @attribute_options[:if] = options[:if] if options[:if]
-      @attribute_options[:tags] = Array(options[:tags]).map(&:to_sym) if options[:tags]
-      # @attribute_options[:tags] = options[:tags] ? Array(options[:tags]).map(&:to_sym) : [ ]
+      @attribute_options[:serialization_options] = options[:serialization_options] if options[:serialization_options]
 
       if association?
         @serializer = options[:serializer]
@@ -17,16 +16,11 @@ module Cerealizer
       end
     end
 
-    def include?(serializer, options={})
-      # no need to do all the checks for this common case
-      return true if attribute_options.blank?
-
-      if attribute_options[:tags].present?
-        options[:tags].present? ? (attribute_options[:tags] & Array(options[:tags])).length > 0 : false
+    def include?(serializer)
+      if attribute_options.blank?
+        true
       elsif attribute_options[:if]
         run_proc(attribute_options[:if], serializer)
-      # elsif options[:exclude_associations] && association?
-      #   false
       else
         true
       end
@@ -38,13 +32,13 @@ module Cerealizer
       raise ArgumentError, "The :if option must be proc or method name"
     end
 
-    def fetch_value(serializer, writer, options={})
+    def fetch_value(serializer, writer)
       if type == :simple
-        fetch_simple(serializer, writer, options)
+        fetch_simple(serializer, writer)
       elsif type == :has_one
-        fetch_has_one(serializer, writer, options)
+        fetch_has_one(serializer, writer)
       elsif type == :has_many
-        fetch_has_many(serializer, writer, options)
+        fetch_has_many(serializer, writer)
       end
     end
 
@@ -68,31 +62,29 @@ module Cerealizer
       end
     end
 
-    def fetch_simple(serializer, writer, options={})
+    def fetch_simple(serializer, writer)
       value = get_value(serializer)
       writer.push_value(name, value)
       value
     end
 
-    def fetch_has_one(serializer, writer, options)
+    def fetch_has_one(serializer, writer)
       unless (assoc_object = get_value(serializer)) == nil
-        serializer = @serializer.new(assoc_object)
         writer.push_object(name)
-          serializer.serialize(writer, options)
+          @serializer.new(attribute_options[:serialization_options]).serialize_attributes(writer, assoc_object)
         writer.pop
       else
         writer.push_value(name, nil)
       end
     end
 
-    def fetch_has_many(serializer, writer, options)
+    def fetch_has_many(serializer, writer)
       writer.push_array(name)
-      ser = @serializer.new(nil)
+      has_many_serializer = @serializer.new(attribute_options[:serialization_options])
 
       get_value(serializer).each do |assoc_object|
         writer.push_object
-          ser.instance_variable_set(:@object, assoc_object)
-          ser.serialize(writer, options)
+          has_many_serializer.serialize_attributes(writer, assoc_object)
         writer.pop
       end
 

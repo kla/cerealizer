@@ -51,7 +51,7 @@ class WriterTest < TestCase
     it "can't push a nil object" do
       writer.push_object
       e = assert_raises(StandardError) { writer.push_object(nil) }
-      assert_match /Can not push onto an Object without a key/, e.message
+      assert_match(/Can not push onto an Object without a key/, e.message)
     end
 
     it "can build a simple object" do

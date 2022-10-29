@@ -1,7 +1,9 @@
+require_relative "./serialization_options"
+
 module Cerealizer
   class Base
     class_attribute :_attributes
-    attr_reader :object
+    attr_reader :object, :serialization_options
 
     def self.attributes(*names)
       Array(names).flatten.each { |name| attribute(name) }
@@ -26,39 +28,59 @@ module Cerealizer
       self._attributes << Attribute.new(name, type, options)
     end
 
-    def initialize(object)
-      @object = object
+    def initialize(options={})
+      @serialization_options = SerializationOptions.new(options)
     end
 
-    def serialize(writer, options={})
-      self.class._attributes.each do |attribute|
-        next unless attribute.include?(self, options)
-        attribute.fetch_value(self, writer, options)
+    def serialize_attributes(writer, object)
+      @object = object
+
+      attributes.each do |attribute|
+        next unless attribute.include?(self)
+        attribute.fetch_value(self, writer)
       end
 
       writer
+    ensure
+      @object = nil
     end
 
-    def serializable_hash(options={})
+    def as_json(object)
       return nil unless object
-      serialize_to_writer(HashWriter.new, options).value
+      serialize_to_writer(HashWriter.new, object).value
     end
-    alias_method :as_json, :serializable_hash
 
-    def to_json(options={})
+    def to_json(object)
       return "null" unless object
-      serialize_to_writer(JsonStringWriter.new, options).value
+      serialize_to_writer(JsonStringWriter.new, object).value
+    end
+
+    def self.serialize(object, options={})
+      new(options).to_json(object)
+    end
+
+    def self.serialize_to_hash(object, options={})
+      new(options).as_json(object)
     end
 
     private
 
-    def serialize_to_writer(writer, options={})
+    def serialize_to_writer(writer, object)
       writer.push_object
-        writer.push_object(object.class.name.underscore) if options[:include_root]
-          serialize(writer, options)
-        writer.pop if options[:include_root]
+        writer.push_object(object.class.name.underscore) if serialization_options.include_root
+          serialize_attributes(writer, object)
+        writer.pop if serialization_options.include_root
       writer.pop
       writer
+    end
+
+    def attributes
+      @attributes ||= self.class._attributes.each_with_object([ ]) do |attribute, attributes|
+        next if serialization_options.exclude_associations && attribute.association?
+        next if serialization_options.except && serialization_options.except.include?(attribute.name)
+        next if serialization_options.only && !serialization_options.only.include?(attribute.name)
+        attributes << attribute
+      end
     end
   end
 end
