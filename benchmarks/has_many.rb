@@ -43,7 +43,7 @@ module Serializers
       has_many :items, serializer: ItemSerializer
 
       def self.serialize(object)
-        new(object).to_json
+        new(object, include: %i[ items ]).to_json
       end
     end
   end
@@ -69,9 +69,11 @@ module Serializers
               json.array! @order.items do |item|
                 json.id item.id
                 json.order_id item.order_id
-                json.created_at item.updated_at
+                json.created_at item.created_at
+                json.updated_at item.updated_at
                 json.name item.name
-                json.price item.quantity
+                json.price item.price
+                json.quantity item.quantity
               end
             end
           end
@@ -121,7 +123,15 @@ module Serializers
       end
 
       def serializable_hash
-        { id: @item.id, order_id: @item.order_id, created_at: @item.updated_at, name: @item.name, price: @item.quantity }
+        {
+          id: @item.id,
+          order_id: @item.order_id,
+          created_at: @item.created_at,
+          updated_at: @item.updated_at,
+          name: @item.name,
+          price: @item.price,
+          quantity: @item.quantity,
+        }
       end
     end
 
