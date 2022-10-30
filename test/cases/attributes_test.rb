@@ -79,8 +79,8 @@ class AttributesTest < TestCase
 
   describe "attribute that returns a hash and array" do
     class AttributeReturnsHashSerializer < Cerealizer::Base
-      attribute :data, method: :data
-      attribute :array, method: :array
+      attribute :data
+      attribute :array
 
       def data
         { a: 1, "b" => 2 }
@@ -102,7 +102,7 @@ class AttributesTest < TestCase
 
   describe "serializer with user params" do
     class WithUserParams < Cerealizer::Base
-      attribute :admin, method: :admin
+      attribute :admin
 
       def admin
         params[:admin]

@@ -56,9 +56,9 @@ module Cerealizer
       object = serializer.object
 
       if method = attribute_options[:method]
-        serializer.public_send(method)
+        serializer.send(method)
       else
-        object.public_send(name)
+        serializer.respond_to?(name) ? serializer.send(name) : object.public_send(name)
       end
     end
 

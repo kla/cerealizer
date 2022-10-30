@@ -54,7 +54,7 @@ class AssociationsTest < TestCase
 
   describe "with user params" do
     class OneSerializer < Cerealizer::Base
-      attribute :admin, method: :admin
+      attribute :admin
 
       def admin
         params[:admin]
@@ -62,7 +62,7 @@ class AssociationsTest < TestCase
     end
 
     class ManySerializer < Cerealizer::Base
-      attribute :admin, method: :admin
+      attribute :admin
 
       def admin
         params[:admin]
@@ -70,9 +70,9 @@ class AssociationsTest < TestCase
     end
 
     class WithUserParamsSerializer < Cerealizer::Base
-      attribute :admin, method: :admin
-      has_one :one, method: :one, serializer: OneSerializer
-      has_many :many, method: :many, serializer: ManySerializer
+      attribute :admin
+      has_one :one, serializer: OneSerializer
+      has_many :many, serializer: ManySerializer
 
       def admin
         params[:admin]

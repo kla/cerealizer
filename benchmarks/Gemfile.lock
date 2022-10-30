@@ -4,6 +4,7 @@ PATH
     cerealizer (0.1.0)
       activesupport
       multi_json
+      oj
 
 GEM
   remote: https://rubygems.org/

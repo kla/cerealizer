@@ -1,7 +1,7 @@
 module Serializers
   class UserSerializer < Cerealizer::Base
     attributes :id, :first_name, :last_name, :created_at, :updated_at
-    attribute :full_name, method: :full_name
+    attribute :full_name
     attribute :admin, method: :admin?, if: :admin?
     attribute :super_admin, method: :super_admin?, if: ->{ super_admin? }
 
