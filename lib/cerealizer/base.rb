@@ -32,6 +32,10 @@ module Cerealizer
       @serialization_options = SerializationOptions.new(options)
     end
 
+    def params
+      serialization_options.params
+    end
+
     def serialize_attributes(writer, object)
       @object = object
 

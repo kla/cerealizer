@@ -51,4 +51,8 @@ class AssociationsTest < TestCase
     assert_equal false, json.has_key?("items")
     assert_equal false, json.has_key?("user")
   end
+
+  describe "with user params" do
+
+  end
 end

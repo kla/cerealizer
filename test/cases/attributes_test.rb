@@ -93,4 +93,19 @@ class AttributesTest < TestCase
       assert_equal 2, json["data"]["b"]
     end
   end
+
+  describe "serializer with user params" do
+    class WithUserParams < Cerealizer::Base
+      attribute :admin, method: :admin
+
+      def admin
+        params[:admin]
+      end
+    end
+
+    it "accepts a params option" do
+      assert WithUserParams.new(params: { admin: true }).as_json(user)["admin"]
+      refute WithUserParams.new(params: { admin: false }).as_json(user)["admin"]
+    end
+  end
 end
