@@ -68,10 +68,21 @@ module Cerealizer
       value
     end
 
+    def build_association_options(serializer)
+      options = attribute_options[:serialization_options]
+
+      if serializer.params
+        options ||= { }
+        options = options.merge(params: serializer.params)
+      end
+
+      options
+    end
+
     def fetch_has_one(serializer, writer)
       unless (assoc_object = get_value(serializer)) == nil
         writer.push_object(name)
-          @serializer.new(attribute_options[:serialization_options]).serialize_attributes(writer, assoc_object)
+          @serializer.new(build_association_options(serializer)).serialize_attributes(writer, assoc_object)
         writer.pop
       else
         writer.push_value(name, nil)
@@ -80,7 +91,7 @@ module Cerealizer
 
     def fetch_has_many(serializer, writer)
       writer.push_array(name)
-      has_many_serializer = @serializer.new(attribute_options[:serialization_options])
+      has_many_serializer = @serializer.new(build_association_options(serializer))
 
       get_value(serializer).each do |assoc_object|
         writer.push_object

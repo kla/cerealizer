@@ -51,4 +51,47 @@ class AssociationsTest < TestCase
     assert_equal false, json.has_key?("items")
     assert_equal false, json.has_key?("user")
   end
+
+  describe "with user params" do
+    class OneSerializer < Cerealizer::Base
+      attribute :admin, method: :admin
+
+      def admin
+        params[:admin]
+      end
+    end
+
+    class ManySerializer < Cerealizer::Base
+      attribute :admin, method: :admin
+
+      def admin
+        params[:admin]
+      end
+    end
+
+    class WithUserParamsSerializer < Cerealizer::Base
+      attribute :admin, method: :admin
+      has_one :one, method: :one, serializer: OneSerializer
+      has_many :many, method: :many, serializer: ManySerializer
+
+      def admin
+        params[:admin]
+      end
+
+      def one
+        object
+      end
+
+      def many
+        [ object ]
+      end
+    end
+
+    it "passes params to associations" do
+      json = WithUserParamsSerializer.new(params: { admin: 1 }).as_json({})
+      assert_equal 1, json["admin"]
+      assert_equal 1, json["one"]["admin"]
+      assert_equal 1, json["many"][0]["admin"]
+    end
+  end
 end
