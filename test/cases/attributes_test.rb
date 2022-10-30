@@ -77,12 +77,17 @@ class AttributesTest < TestCase
     end
   end
 
-  describe "attribute that returns a hash" do
+  describe "attribute that returns a hash and array" do
     class AttributeReturnsHashSerializer < Cerealizer::Base
       attribute :data, method: :data
+      attribute :array, method: :array
 
       def data
         { a: 1, "b" => 2 }
+      end
+
+      def array
+        [ { a: 1 } ]
       end
     end
 
@@ -91,6 +96,7 @@ class AttributesTest < TestCase
       assert_equal %w( a b ), json["data"].keys
       assert_equal 1, json["data"]["a"]
       assert_equal 2, json["data"]["b"]
+      assert_equal 1, json["array"][0]["a"]
     end
   end
 

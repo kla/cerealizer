@@ -17,7 +17,7 @@ module Cerealizer
         value = value.to_s
       end
 
-      if value.is_a?(Hash)
+      if value.is_a?(Hash) || value.is_a?(Array)
         # So that symbolized hash keys get written correctly
         writer.push_json(value.to_json, key)
       else
