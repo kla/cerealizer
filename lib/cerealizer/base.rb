@@ -58,6 +58,7 @@ module Cerealizer
       return "null" unless object
       serialize_to_writer(JsonStringWriter.new, object).value
     end
+    alias_method :serialize, :to_json
 
     def self.serialize(object, options={})
       new(options).to_json(object)
