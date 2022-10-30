@@ -76,4 +76,21 @@ class AttributesTest < TestCase
       assert_equal %w( order_id ), hash["items"][0].keys
     end
   end
+
+  describe "attribute that returns a hash" do
+    class AttributeReturnsHashSerializer < Cerealizer::Base
+      attribute :data, method: :data
+
+      def data
+        { a: 1, "b" => 2 }
+      end
+    end
+
+    it "handles keys that are symbols" do
+      json = JSON.parse(AttributeReturnsHashSerializer.serialize({}))
+      assert_equal %w( a b ), json["data"].keys
+      assert_equal 1, json["data"]["a"]
+      assert_equal 2, json["data"]["b"]
+    end
+  end
 end

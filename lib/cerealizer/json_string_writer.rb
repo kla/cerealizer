@@ -16,7 +16,13 @@ module Cerealizer
       elsif value.is_a?(BigDecimal)
         value = value.to_s
       end
-      writer.push_value(value, key)
+
+      if value.is_a?(Hash)
+        # So that symbolized hash keys get written correctly
+        writer.push_json(value.to_json, key)
+      else
+        writer.push_value(value, key)
+      end
     end
 
     def push_array(key)
