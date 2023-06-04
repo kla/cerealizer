@@ -68,7 +68,21 @@ module Cerealizer
       new(options).as_json(object)
     end
 
-    private
+    def self.serialize_enumerable(enumerable, options={})
+      serializer = new(options)
+      writer = JsonStringWriter.new
+      writer.push_array("")
+
+      enumerable.each do |object|
+        writer.push_object
+        serializer.serialize_attributes(writer, object)
+        writer.pop
+      end
+
+      writer.pop
+      value = writer.value
+      value.slice(3, value.length) # get rid of the leading: "":
+    end
 
     def serialize_to_writer(writer, object)
       writer.push_object
@@ -78,6 +92,8 @@ module Cerealizer
       writer.pop
       writer
     end
+
+    private
 
     def attributes
       @attributes ||= self.class._attributes.each_with_object([ ]) do |attribute, attributes|
